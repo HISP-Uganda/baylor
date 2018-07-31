@@ -1,0 +1,72 @@
+<p *ngIf="loaderService.isLoading | async">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</p>
+<h1 mat-dialog-title>Adding Report</h1>
+<div mat-dialog-content>
+  <form [formGroup]="reportForm">
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker2" placeholder="Report start date" formControlName="startDate">
+      <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+      <mat-datepicker #picker2></mat-datepicker>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!reportForm.get('startDate').valid && reportForm.get('startDate').touched">Please pick activity planned start date</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker3" placeholder="Report end date" formControlName="endDate">
+      <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+      <mat-datepicker #picker3></mat-datepicker>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!reportForm.get('endDate').valid && reportForm.get('endDate').touched">Please pick activity planned end date</span>
+    </mat-error>
+
+    <mat-error>
+        <span
+          *ngIf="!reportForm.get('district').valid && reportForm.get('district').touched">Please select result area</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker1" placeholder="Date" formControlName="date">
+      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!reportForm.get('startDate').valid && reportForm.get('startDate').touched">Please pick activity planned start date</span>
+    </mat-error>
+
+    <mat-form-field>
+      <textarea matInput placeholder="Achievements summary" formControlName="achievementsSummary" rows="3"></textarea>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!reportForm.get('achievementsSummary').valid && reportForm.get('achievementsSummary').touched">Please provide achievements summary</span>
+    </mat-error>
+
+    <mat-form-field>
+      <textarea matInput placeholder="Achievements" formControlName="achievements" rows="3"></textarea>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!reportForm.get('achievements').valid && reportForm.get('achievements').touched">Please provide achievements</span>
+    </mat-error>
+
+    <mat-form-field>
+      <textarea matInput placeholder="Constraints" formControlName="constraints" rows="3"></textarea>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!reportForm.get('constraints').valid && reportForm.get('constraints').touched">Please provide constraints</span>
+    </mat-error>
+
+    <mat-form-field>
+      <textarea matInput placeholder="Lessons learnt" formControlName="lessons" rows="3"></textarea>
+    </mat-form-field>
+    <mat-error>
+        <span
+          *ngIf="!reportForm.get('lessons').valid && reportForm.get('lessons').touched">Please provide lessons</span>
+    </mat-error>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="reportForm.value" cdkFocusInitial>OK</button>
+</div>

@@ -1,0 +1,49 @@
+<p *ngIf="loaderService.isLoading | async">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</p>
+<div style="margin: 5px">
+  <button type="button" (click)="openDialog({editing:false,viewing:false},{})" mat-raised-button>Add Objective</button>
+  <br>
+  <br>
+  <mat-form-field>
+    <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+  </mat-form-field>
+  <div class="mat-elevation-z8">
+    <table mat-table [dataSource]="dataSource" matSort>
+      <!-- Generic column definition -->
+      <ng-container matColumnDef="objectiveCode">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Objective code</th>
+        <td mat-cell *matCellDef="let element"> {{element.objectiveCode}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="objectiveName">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Objective Name</th>
+        <td mat-cell *matCellDef="let element"> {{element.objectiveName}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="projectCode">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Project Code</th>
+        <td mat-cell *matCellDef="let element"> {{element.project.projectCode}}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+        <td mat-cell *matCellDef="let element;let i = index;">
+          <button type="button" mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <a mat-menu-item (click)="openDialog({editing:false,viewing:true},element)">View</a>
+            <a mat-menu-item (click)="openDialog({editing:true,viewing:false,index:i},element)">Edit</a>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <mat-paginator #paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20,50]" [showFirstLastButtons]="true">
+    </mat-paginator>
+  </div>
+</div>

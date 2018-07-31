@@ -1,0 +1,35 @@
+<p *ngIf="loaderService.isLoading | async">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</p>
+<h1 mat-dialog-title>Adding Objective</h1>
+<div mat-dialog-content>
+  <form [formGroup]="objectiveForm">
+    <mat-form-field>
+      <input matInput placeholder="Objective Code" formControlName="objectiveCode" [readonly]="viewing">
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!objectiveForm.get('objectiveCode').valid && objectiveForm.get('objectiveCode').touched">Please provide objective code</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput placeholder="Objective Name" formControlName="objectiveName" [readonly]="viewing">
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!objectiveForm.get('objectiveName').valid && objectiveForm.get('objectiveName').touched">Please provide objective name</span>
+    </mat-error>
+
+    <ng-select placeholder="Project" [items]="projects" formControlName="project" [disabled]="viewing"
+               bindLabel="projectName"
+               dropdownPosition="bottom">
+    </ng-select>
+
+    <mat-error>
+      <span *ngIf="!objectiveForm.get('project').valid && objectiveForm.get('project').touched">Please select project</span>
+    </mat-error>
+
+  </form>
+</div>
+<div mat-dialog-actions>
+    <button mat-button (click)="onNoClick()">Cancel</button>
+    <button mat-button [mat-dialog-close]="objectiveForm.value" cdkFocusInitial [disabled]="!objectiveForm.valid || viewing">OK</button>
+</div>

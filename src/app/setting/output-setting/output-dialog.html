@@ -1,0 +1,46 @@
+<p *ngIf="loaderService.isLoading | async">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</p>
+<h1 mat-dialog-title>Adding Output</h1>
+<div mat-dialog-content>
+  <form [formGroup]="outputForm">
+    <mat-form-field>
+      <textarea matInput placeholder="Output Description" formControlName="description" [readonly]="viewing"></textarea>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!outputForm.get('description').valid && outputForm.get('description').touched">Please provide output description</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput placeholder="Output" formControlName="output" [readonly]="viewing">
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!outputForm.get('output').valid && outputForm.get('output').touched">Please output</span>
+    </mat-error>
+
+    <mat-form-field>
+      <mat-select placeholder="Frequency" formControlName="period" [disabled]="viewing">
+        <mat-option *ngFor="let r of frequency" [value]="r">
+          {{ r }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!outputForm.get('period').valid && outputForm.get('period').touched">Select output period</span>
+    </mat-error>
+
+    <ng-select placeholder="Project" [items]="projects" formControlName="project"
+               bindLabel="projectName"
+               dropdownPosition="bottom">
+    </ng-select>
+
+    <mat-error>
+      <span *ngIf="!outputForm.get('project').valid && outputForm.get('project').touched">Please select project</span>
+    </mat-error>
+
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="outputForm.value" cdkFocusInitial [disabled]="!outputForm.valid || viewing">OK</button>
+</div>

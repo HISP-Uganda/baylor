@@ -1,0 +1,62 @@
+<h1 mat-dialog-title>Adding Action for {{data.issue}}</h1>
+<div mat-dialog-content>
+  <form [formGroup]="actionForm">
+    <mat-form-field>
+      <input matInput placeholder="Action" formControlName="action">
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!actionForm.get('action').valid && actionForm.get('action').touched">Please provide action</span>
+    </mat-error>
+
+    <mat-form-field>
+      <textarea matInput placeholder="Action description" formControlName="actionDescription" rows="3"></textarea>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!actionForm.get('actionDescription').valid && actionForm.get('actionDescription').touched">Please provide action description</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker1" placeholder="Action start date" formControlName="actionStartDate">
+      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!actionForm.get('actionStartDate').valid && actionForm.get('actionStartDate').touched">Please provide expected completion date</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker2" placeholder="Action end date" formControlName="actionEndDate">
+      <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+      <mat-datepicker #picker2></mat-datepicker>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!actionForm.get('actionEndDate').valid && actionForm.get('actionEndDate').touched">Please provide expected completion date</span>
+    </mat-error>
+
+    <mat-form-field>
+      <mat-select placeholder="Current issue status" formControlName="currentIssueStatus">
+        <mat-option *ngFor="let r of outcomes" [value]="r.code">
+          {{ r.displayName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-error>
+      <span *ngIf="!actionForm.get('currentIssueStatus').valid && actionForm.get('currentIssueStatus').touched">Please provide outcome</span>
+    </mat-error>
+
+    <ng-select placeholder="Action taken by" [items]="users" formControlName="actionTakenBy"
+               bindLabel="displayName"
+               bindValue="displayName"
+               dropdownPosition="bottom">
+    </ng-select>
+    <mat-error>
+      <span *ngIf="!actionForm.get('actionTakenBy').valid && actionForm.get('actionTakenBy').touched">Please provide responsible person</span>
+    </mat-error>
+
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="actionForm.value" cdkFocusInitial>OK</button>
+</div>

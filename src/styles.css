@@ -1,0 +1,76 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~@angular/material/prebuilt-themes/indigo-pink.css";
+@import "~@ng-select/ng-select/themes/material.theme.css";
+
+body {
+  font-family: Roboto, Arial, sans-serif;
+  margin: 0;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-drawer {
+  width: 200px;
+  background-color: white
+}
+
+mat-drawer-content {
+  background-color: white
+}
+
+table {
+  width: 100%;
+}
+
+.complete,
+.active,
+.resolved,
+.Resolved {
+  background-color: green;
+}
+
+.progress,
+.pending,
+.approaching,
+.Approaching,
+.Upcoming,
+.Pending {
+  background-color: yellow;
+}
+
+.overdue,
+.Overdue,
+.closed,
+.New,
+.Closed {
+  background-color: red;
+}
+
+.example-spacer {
+  flex: 1 1 auto;
+}
+
+button,
+button:active,
+button:focus,
+button:hover,
+.btn,
+.btn:active,
+.btn:focus,
+.btn:hover {
+  outline: none !important;
+}
+
+/*tr:nth-child(even) {
+  background-color: #dae5f4;
+}*/
+
+/*tr:nth-child(odd) {*/
+/*background-color: #b8d1f3;*/
+/*}*/

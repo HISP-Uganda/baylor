@@ -1,0 +1,36 @@
+<p *ngIf="loaderService.isLoading | async">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</p>
+<h1 mat-dialog-title>Adding Result Area</h1>
+<div mat-dialog-content>
+  <form [formGroup]="resultAreaForm">
+    <mat-form-field>
+      <input matInput placeholder="Result Area Code" formControlName="resultAreaCode" [readonly]="viewing">
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!resultAreaForm.get('resultAreaCode').valid && resultAreaForm.get('resultAreaCode').touched">Please provide resultArea code</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput placeholder="Result Area Name" formControlName="resultAreaName" [readonly]="viewing">
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!resultAreaForm.get('resultAreaName').valid && resultAreaForm.get('resultAreaName').touched">Please provide result area name</span>
+    </mat-error>
+
+    <ng-select placeholder="Objective" [items]="objectives" formControlName="objective" [disabled]="viewing"
+               bindLabel="objectiveName"
+               dropdownPosition="bottom">
+    </ng-select>
+    <mat-error>
+      <span *ngIf="!resultAreaForm.get('objective').valid && resultAreaForm.get('objective').touched">Please select objective</span>
+    </mat-error>
+
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="resultAreaForm.value" cdkFocusInitial [disabled]="!resultAreaForm.valid || viewing">OK</button>
+</div>
+
+

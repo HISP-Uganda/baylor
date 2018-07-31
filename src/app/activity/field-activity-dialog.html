@@ -1,0 +1,144 @@
+<h1 mat-dialog-title>Editing Activity</h1>
+<div mat-dialog-content>
+  <form [formGroup]="activityForm">
+    <ng-select placeholder="Activity Code" [items]="activities" formControlName="activityCode"
+               bindLabel="activityName"
+               bindValue="activityCode"
+               dropdownPosition="bottom">
+      <ng-template ng-label-tmp let-item="item">
+        {{ item.activityCode }} - {{ item.financialYear }} - {{item.activityName}}
+      </ng-template>
+    </ng-select>
+    <mat-error>
+      <span *ngIf="!activityForm.get('activityCode').valid && activityForm.get('activityCode').touched">
+        Please provide activity code
+      </span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput placeholder="Transaction code" formControlName="transactionCode" readonly>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!activityForm.get('transactionCode').valid && activityForm.get('transactionCode').touched">Please activity code</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput placeholder="Activity" formControlName="activity" readonly>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!activityForm.get('activity').valid && activityForm.get('activity').touched">Please provide activity name</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker1" [max]="maxDate" placeholder="Pick submission date" readonly
+             formControlName="submissionDate">
+      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!activityForm.get('submissionDate').valid && activityForm.get('submissionDate').touched">
+        Please pick activity submission date
+      </span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker2" [min]="maxDate"
+             placeholder="Pick planned start date" readonly
+             formControlName="plannedStartDate" (focus)="picker2.open()">
+      <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+      <mat-datepicker #picker2></mat-datepicker>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!activityForm.get('plannedStartDate').valid && activityForm.get('plannedStartDate').touched">
+        Please pick activity planned start date
+      </span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker3" [matDatepickerFilter]="myFilter"
+             placeholder="Pick planned end date" readonly
+             formControlName="plannedEndDate">
+      <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+      <mat-datepicker #picker3></mat-datepicker>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!activityForm.get('plannedEndDate').valid && activityForm.get('plannedEndDate').touched">
+        Please pick activity planned end date
+      </span>
+    </mat-error>
+
+    <mat-form-field>
+      <textarea matInput placeholder="Expected output" formControlName="output" readonly></textarea>
+    </mat-form-field>
+    <mat-error>
+      <span
+        *ngIf="!activityForm.get('output').valid && activityForm.get('output').touched">
+        Please provide expected output
+      </span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput placeholder="Project name" formControlName="projectName" readonly>
+    </mat-form-field>
+    <mat-error>
+      <span
+        *ngIf="!activityForm.get('projectName').valid && activityForm.get('projectName').touched">
+        Please provide activity will take place
+      </span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput placeholder="Result area" formControlName="resultArea" readonly>
+    </mat-form-field>
+
+    <mat-error>
+      <span
+        *ngIf="!activityForm.get('resultArea').valid && activityForm.get('resultArea').touched">
+        Please select result area
+      </span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput placeholder="Objective" formControlName="objective" readonly>
+    </mat-form-field>
+
+    <mat-error>
+      <span
+        *ngIf="!activityForm.get('objective').valid && activityForm.get('objective').touched">Please select objective</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput placeholder="Submitted by" formControlName="submittedBy" readonly>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!activityForm.get('submittedBy').valid && activityForm.get('submittedBy').touched">Please provide person who submitted activity</span>
+    </mat-error>
+
+    <ng-select placeholder="Implementor" [items]="users" formControlName="implementor"
+               bindLabel="displayName"
+               bindValue="displayName"
+               dropdownPosition="bottom">
+    </ng-select>
+    <mat-error>
+      <span *ngIf="!activityForm.get('implementor').valid && activityForm.get('implementor').touched">
+        Please provide implementor
+      </span>
+    </mat-error>
+
+    <ng-select placeholder="Position of submitting officer" [items]="positions" formControlName="officerPosition"
+               bindLabel="displayName"
+               bindValue="code"
+               dropdownPosition="bottom">
+    </ng-select>
+
+    <mat-error>
+      <span *ngIf="!activityForm.get('officerPosition').valid && activityForm.get('officerPosition').touched">
+        Please select position of submitting officer
+      </span>
+    </mat-error>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="activityForm.value" cdkFocusInitial>OK</button>
+</div>

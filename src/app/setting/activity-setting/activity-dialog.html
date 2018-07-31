@@ -1,0 +1,62 @@
+<p *ngIf="loaderService.isLoading | async">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</p>
+<h1 mat-dialog-title>Adding Activity</h1>
+<div mat-dialog-content>
+  <form [formGroup]="activityForm">
+    <mat-form-field>
+      <input matInput placeholder="Activity Code" formControlName="activityCode" [readonly]="viewing">
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!activityForm.get('activityCode').valid && activityForm.get('activityCode').touched">Please provide activity code</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput placeholder="Activity Name" formControlName="activityName" [readonly]="viewing">
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!activityForm.get('activityName').valid && activityForm.get('activityName').touched">Please provide activity name</span>
+    </mat-error>
+
+    <ng-select placeholder="Result Area" [items]="resultAreas" formControlName="resultArea"
+               bindLabel="resultAreaName"
+               dropdownPosition="bottom">
+    </ng-select>
+    <mat-error>
+      <span *ngIf="!activityForm.get('resultArea').valid && activityForm.get('resultArea').touched">Please select result area</span>
+    </mat-error>
+
+    <ng-select placeholder="Frequency" [items]="frequencies" formControlName="frequency"
+               dropdownPosition="bottom">
+    </ng-select>
+    <mat-error>
+      <span *ngIf="!activityForm.get('frequency').valid && activityForm.get('frequency').touched">Please select result area</span>
+    </mat-error>
+
+
+    <mat-form-field>
+      <textarea matInput placeholder="Expected Output" formControlName="expectedOutput" [readonly]="viewing"></textarea>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!activityForm.get('expectedOutput').valid && activityForm.get('expectedOutput').touched">Provide expected output</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput placeholder="Financial Year" formControlName="financialYear" [readonly]="viewing">
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!activityForm.get('financialYear').valid && activityForm.get('financialYear').touched">Provide financial year</span>
+    </mat-error>
+
+    <ng-select placeholder="Responsible Person" [items]="users" formControlName="responsiblePerson"
+               bindLabel="displayName"
+               bindValue="displayName"
+               dropdownPosition="bottom">
+    </ng-select>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="activityForm.value" cdkFocusInitial [disabled]="!activityForm.valid || viewing">OK
+  </button>
+</div>
