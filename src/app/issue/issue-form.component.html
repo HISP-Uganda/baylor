@@ -1,0 +1,86 @@
+<div *mobxAutorun>
+  <p *ngIf="loaderService.isLoading | async">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </p>
+  <div class="mat-elevation-z8">
+    <div fxLayout="row">
+      <div fxFlex="20" style="margin: 5px;">
+        <br>
+        <mat-select placeholder="Level" (selectionChange)="getOrgUnits($event.value)" [(ngModel)]="selectedLevel">
+          <mat-option *ngFor="let l of levels" [value]="l">
+            {{ l.displayName }}
+          </mat-option>
+        </mat-select>
+        <br>
+        <br>
+        <ngx-treeview
+          [config]="config"
+          [items]="items"
+          (selectedChange)="onSelectedChange($event)"
+          (filterChange)="onFilterChange($event)">
+        </ngx-treeview>
+      </div>
+      <div fxFlex style="margin: 5px;">
+
+        <form [formGroup]="issueForm" (ngSubmit)="onFormSubmit()">
+          <mat-form-field>
+            <mat-select placeholder="Where" formControlName="where" multiple>
+              <mat-option *ngFor="let r of orgUnits" [value]="r.value">
+                {{ r.displayName }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-error>
+            <span *ngIf="!issueForm.get('where').valid && issueForm.get('where').touched">Please provide activity will take place</span>
+          </mat-error>
+          <mat-form-field>
+            <input matInput [matDatepicker]="picker1" placeholder="Pick registration date"
+                   formControlName="registrationDate">
+            <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+            <mat-datepicker #picker1></mat-datepicker>
+          </mat-form-field>
+          <mat-error>
+            <span *ngIf="!issueForm.get('registrationDate').valid && issueForm.get('registrationDate').touched">Please provide registration date</span>
+          </mat-error>
+
+          <mat-form-field>
+            <input matInput placeholder="Issue" formControlName="issue">
+          </mat-form-field>
+          <mat-error>
+            <span *ngIf="!issueForm.get('issue').valid && issueForm.get('issue').touched">Please provide issue</span>
+          </mat-error>
+
+          <mat-form-field>
+            <mat-select placeholder="Technical area" formControlName="technicalArea">
+              <mat-option *ngFor="let r of areas" [value]="r.code">
+                {{ r.displayName }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <ng-select placeholder="Responsible person" [items]="users" formControlName="responsiblePerson"
+                     bindLabel="displayName"
+                     bindValue="displayName"
+                     dropdownPosition="bottom">
+          </ng-select>
+          <mat-error>
+            <span *ngIf="!issueForm.get('responsiblePerson').valid && issueForm.get('responsiblePerson').touched">Responsible is required</span>
+          </mat-error>
+
+          <mat-form-field>
+            <input matInput [matDatepicker]="picker4" placeholder="Pick expected resolution date"
+                   formControlName="expectedResolutionDate">
+            <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+            <mat-datepicker #picker4></mat-datepicker>
+          </mat-form-field>
+          <mat-error>
+            <span
+              *ngIf="!issueForm.get('expectedResolutionDate').valid && issueForm.get('expectedResolutionDate').touched">Please provide expected resolution date</span>
+          </mat-error>
+          <button mat-raised-button color="accent">Submit</button>
+          <br>
+          <br>
+        </form>
+      </div>
+    </div>
+  </div>

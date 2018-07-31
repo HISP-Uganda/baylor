@@ -1,0 +1,171 @@
+<div *mobxAutorun>
+  <p *ngIf="loaderService.isLoading | async">
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  </p>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <span style="font-weight: bolder">Activity: {{selectedActivity['activity']}} - From {{selectedActivity['plannedStartDate']}} To {{selectedActivity['plannedEndDate']}}</span>
+    </mat-expansion-panel-header>
+    <p>
+    </p>
+    <!-- <mat-action-row>
+      <button mat-button>Edit Activity</button>
+    </mat-action-row>-->
+  </mat-expansion-panel>
+  <div fxLayout="row" fxLayout.xs="column" style="height:840px;margin-top: 10px" ngxSplit="row"
+       class="mat-elevation-z8">
+    <div fxFlex="60%" ngxSplitArea class="c1r1">
+      <!--<div class="c1r1_header">Report</div>-->
+      <mat-toolbar class="c1r1_header">
+        Activity Report
+      </mat-toolbar>
+      <form [formGroup]="reportForm" (ngSubmit)="onFormSubmit(reportForm.value)" *ngIf="selectedActivity !== null">
+        <mat-form-field>
+          <input matInput [matDatepicker]="picker2" [max]="maxDate" placeholder="Activity start date"
+                 formControlName="reportStartDate">
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+        <mat-error>
+          <span *ngIf="!reportForm.get('reportStartDate').valid && reportForm.get('reportStartDate').touched">Please pick activity start date</span>
+        </mat-error>
+
+        <mat-form-field>
+          <input matInput [matDatepicker]="picker3" [matDatepickerFilter]="myFilter" placeholder="Activity end date"
+                 formControlName="reportEndDate">
+          <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+          <mat-datepicker #picker3></mat-datepicker>
+        </mat-form-field>
+        <mat-error>
+          <span *ngIf="!reportForm.get('reportEndDate').valid && reportForm.get('reportEndDate').touched">Please pick activity end date</span>
+        </mat-error>
+
+        <mat-form-field>
+          <input matInput placeholder="Report title" formControlName="reportTitle">
+        </mat-form-field>
+        <mat-error>
+          <span *ngIf="!reportForm.get('reportTitle').valid && reportForm.get('reportTitle').touched">Please provide report title</span>
+        </mat-error>
+
+        <mat-form-field>
+          <input matInput [matDatepicker]="picker1" [max]="maxDate" placeholder="Report submission date"
+                 formControlName="reportDate">
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+        <mat-error>
+          <span *ngIf="!reportForm.get('reportDate').valid && reportForm.get('reportDate').touched">Please pick report submission date</span>
+        </mat-error>
+
+        <mat-form-field>
+          <textarea matInput placeholder="Achievements summary" formControlName="achievementsSummary"
+                    rows="3"></textarea>
+        </mat-form-field>
+        <mat-error>
+          <span *ngIf="!reportForm.get('achievementsSummary').valid && reportForm.get('achievementsSummary').touched">Please provide achievements summary</span>
+        </mat-error>
+
+        <mat-form-field>
+          <textarea matInput placeholder="Achievements" formControlName="achievements" rows="3"></textarea>
+        </mat-form-field>
+        <mat-error>
+          <span *ngIf="!reportForm.get('achievements').valid && reportForm.get('achievements').touched">Please provide achievements</span>
+        </mat-error>
+
+        <mat-form-field>
+          <textarea matInput placeholder="Constraints" formControlName="constraints" rows="3"></textarea>
+        </mat-form-field>
+        <mat-error>
+          <span *ngIf="!reportForm.get('constraints').valid && reportForm.get('constraints').touched">Please provide constraints</span>
+        </mat-error>
+
+        <mat-form-field>
+          <textarea matInput placeholder="Lessons learnt" formControlName="lessons" rows="3"></textarea>
+        </mat-form-field>
+        <mat-error>
+        <span
+          *ngIf="!reportForm.get('lessons').valid && reportForm.get('lessons').touched">Please provide lessons</span>
+        </mat-error>
+
+        <!--<a href="{{API_URL}}" *ngIf="selectedReport !== null && selectedReport.report">Download Report</a>-->
+        <button mat-raised-button color="accent" [disabled]="!reportForm.valid">{{formLabel}}</button>&nbsp;
+        <app-upload *ngIf="selectedReport !== null && ! selectedReport.report" [owner]="selectedReport"
+                    field="yxGmEyvPfwl"></app-upload>
+        <!-- <button *ngIf="selectedReport !== null && selectedReport.reportStatus !== 'Approved'" type="button" mat-raised-button color="accent" (click)="approveReport()">Approve Report</button> -->
+      </form>
+    </div>
+    <div class="handle handle-row" ngxSplitHandle>
+      <i class="material-icons">&#xE25D;</i>
+    </div>
+    <div fxFlex>
+      <div fxLayout="column" fxFlexFill>
+        <div class="c2r1_body">
+          <!--<div class="c2r1_header">Issues</div>-->
+          <mat-toolbar class="c2r1_header">
+            Issues Arising
+            <span class="example-spacer"></span>
+            <button [disabled]="selectedReport == null || !baylorStore.canAddIssue" mat-button (click)="openDialog({})">
+              Add Issue
+            </button>
+          </mat-toolbar>
+          <table mat-table [dataSource]="dataSource" matSort>
+            <ng-container matColumnDef="issue">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Issue</th>
+              <td mat-cell *matCellDef="let element">{{ element.issue }}</td>
+            </ng-container>
+            <ng-container matColumnDef="issueStatus">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Issue Status</th>
+              <td mat-cell *matCellDef="let element">{{ element.issueStatus }}</td>
+            </ng-container>
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                <!-- <mat-icon>more_vert</mat-icon> -->
+              </th>
+              <td mat-cell *matCellDef="let element">
+                <!-- <button mat-button >View</button> -->
+                <button type="button" mat-icon-button [matMenuTriggerFor]="menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button mat-menu-item (click)="openDialog(element)">View Issue</button>
+                  <button *ngIf="baylorStore.canAddAction" mat-menu-item (click)="openActionDialog({},element)">Add
+                    Action
+                  </button>
+                  <button mat-menu-item (click)="selectIssue(element)">View Actions</button>
+                </mat-menu>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="issueColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: issueColumns;"></tr>
+          </table>
+          <br>
+          <br>
+          <div *ngIf="selectedIssue !== null">
+
+            <mat-toolbar class="c2r1_header">
+              Current Actions
+              <span class="example-spacer"></span>
+            </mat-toolbar>
+            <table mat-table [dataSource]="actionDataSource" matSort>
+              <ng-container matColumnDef="issue">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Issue</th>
+                <td mat-cell *matCellDef="let element">{{ element.issue }}</td>
+              </ng-container>
+              <ng-container matColumnDef="action">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Action</th>
+                <td mat-cell *matCellDef="let element">{{ element.action }}</td>
+              </ng-container>
+              <ng-container matColumnDef="currentIssueStatus">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>Current Issue Status</th>
+                <td mat-cell *matCellDef="let element">{{ element.currentIssueStatus }}</td>
+              </ng-container>
+              <tr mat-header-row *matHeaderRowDef="actionColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns: actionColumns;"
+                  (click)="openActionDialog(row,selectedIssue)"></tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

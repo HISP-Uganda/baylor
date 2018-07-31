@@ -1,0 +1,74 @@
+<p *ngIf="loaderService.isLoading | async">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</p>
+<h1 mat-dialog-title>Adding Issue</h1>
+<div mat-dialog-content>
+  <form [formGroup]="issueForm">
+    <mat-form-field *ngIf="reports.length > 0">
+      <!--<input matInput placeholder="Report" formControlName="report" readonly>-->
+      <mat-select placeholder="Report" formControlName="report" readonly>
+        <mat-option *ngFor="let r of reports" [value]="r.report">
+          {{ r.displayName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-error>
+      <span *ngIf="!issueForm.get('report').valid && issueForm.get('report').touched">Report is needed</span>
+    </mat-error>
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker1" placeholder="Pick registration date"
+             formControlName="registrationDate">
+      <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+      <mat-datepicker #picker1></mat-datepicker>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!issueForm.get('registrationDate').valid && issueForm.get('registrationDate').touched">Please provide registration date</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput placeholder="Transaction code" formControlName="transactionCode" readonly>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!issueForm.get('transactionCode').valid && issueForm.get('transactionCode').touched">Please transaction code</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput placeholder="Issue" formControlName="issue">
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!issueForm.get('issue').valid && issueForm.get('issue').touched">Please provide issue</span>
+    </mat-error>
+
+    <mat-form-field>
+      <mat-select placeholder="Technical area" formControlName="technicalArea">
+        <mat-option *ngFor="let r of areas" [value]="r.code">
+          {{ r.displayName }}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <ng-select placeholder="Responsible person" [items]="users" formControlName="responsiblePerson"
+               bindLabel="displayName"
+               bindValue="displayName"
+               dropdownPosition="bottom">
+    </ng-select>
+    <mat-error>
+      <span *ngIf="!issueForm.get('responsiblePerson').valid && issueForm.get('responsiblePerson').touched">Responsible is required</span>
+    </mat-error>
+
+    <mat-form-field>
+      <input matInput [matDatepicker]="picker4" placeholder="Pick expected resolution date"
+             formControlName="expectedResolutionDate">
+      <mat-datepicker-toggle matSuffix [for]="picker4"></mat-datepicker-toggle>
+      <mat-datepicker #picker4></mat-datepicker>
+    </mat-form-field>
+    <mat-error>
+      <span *ngIf="!issueForm.get('expectedResolutionDate').valid && issueForm.get('expectedResolutionDate').touched">Please provide expected resolution date</span>
+    </mat-error>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onNoClick()">Cancel</button>
+  <button mat-button [mat-dialog-close]="issueForm.value" cdkFocusInitial>OK</button>
+</div>

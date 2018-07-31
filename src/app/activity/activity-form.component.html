@@ -1,0 +1,154 @@
+<p *ngIf="loaderService.isLoading | async">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</p>
+<div class="mat-elevation-z8">
+  <div fxLayout="row">
+    <div fxFlex="20" style="margin: 5px;">
+      <br>
+      <mat-select placeholder="Level" (selectionChange)="getOrgUnits($event.value)" [(ngModel)]="selectedLevel">
+        <mat-option *ngFor="let l of levels" [value]="l">
+          {{ l.displayName }}
+        </mat-option>
+      </mat-select>
+      <br>
+      <br>
+      <ngx-treeview
+        [config]="config"
+        [items]="items"
+        (selectedChange)="onSelectedChange($event)"
+        (filterChange)="onFilterChange($event)">
+      </ngx-treeview>
+    </div>
+    <div fxFlex style="margin: 5px;">
+      <form [formGroup]="activityForm" (ngSubmit)="onFormSubmit()">
+
+        <ng-select placeholder="Activity code" formControlName="activityCode" dropdownPosition="bottom">
+          <ng-option *ngFor="let a of activities" [value]="a.activityCode" >
+            {{ a.activityCode }} - {{a.activityName}}
+          </ng-option>
+        </ng-select>
+
+        <mat-error>
+          <span *ngIf="!activityForm.get('activityCode').valid && activityForm.get('activityCode').touched">Please provide activity code</span>
+        </mat-error>
+
+        <mat-form-field>
+          <input matInput placeholder="Transaction code" formControlName="transactionCode" readonly>
+        </mat-form-field>
+        <mat-error>
+          <span *ngIf="!activityForm.get('transactionCode').valid && activityForm.get('transactionCode').touched">Please activity code</span>
+        </mat-error>
+
+        <mat-form-field>
+          <input matInput placeholder="Activity" formControlName="activity" readonly>
+        </mat-form-field>
+        <mat-error>
+          <span *ngIf="!activityForm.get('activity').valid && activityForm.get('activity').touched">Please provide activity name</span>
+        </mat-error>
+
+        <mat-form-field>
+          <mat-select placeholder="Where" formControlName="where" multiple>
+            <mat-option *ngFor="let r of orgUnits" [value]="r.value">
+              {{ r.displayName }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-error>
+      <span
+        *ngIf="!activityForm.get('where').valid && activityForm.get('where').touched">Please provide activity will take place</span>
+        </mat-error>
+
+        <mat-form-field>
+          <input matInput [matDatepicker]="picker1" [max]="maxDate" placeholder="Pick submission date"
+                 formControlName="submissionDate">
+          <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+          <mat-datepicker #picker1></mat-datepicker>
+        </mat-form-field>
+        <mat-error>
+          <span *ngIf="!activityForm.get('submissionDate').valid && activityForm.get('submissionDate').touched">Please pick activity submission date</span>
+        </mat-error>
+
+        <mat-form-field>
+          <input matInput [matDatepicker]="picker2" [min]="maxDate" placeholder="Pick planned start date"
+                 formControlName="plannedStartDate">
+          <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+          <mat-datepicker #picker2></mat-datepicker>
+        </mat-form-field>
+        <mat-error>
+          <span *ngIf="!activityForm.get('plannedStartDate').valid && activityForm.get('plannedStartDate').touched">Please pick activity planned start date</span>
+        </mat-error>
+
+        <mat-form-field>
+          <input matInput [matDatepicker]="picker3" [matDatepickerFilter]="myFilter" placeholder="Pick planned end date"
+                 formControlName="plannedEndDate">
+          <mat-datepicker-toggle matSuffix [for]="picker3"></mat-datepicker-toggle>
+          <mat-datepicker #picker3></mat-datepicker>
+        </mat-form-field>
+        <mat-error>
+          <span *ngIf="!activityForm.get('plannedEndDate').valid && activityForm.get('plannedEndDate').touched">Please pick activity planned end date</span>
+        </mat-error>
+
+        <mat-form-field>
+          <textarea matInput placeholder="Expected output" formControlName="output"></textarea>
+        </mat-form-field>
+        <mat-error>
+      <span
+        *ngIf="!activityForm.get('output').valid && activityForm.get('output').touched">Please provide expected output</span>
+        </mat-error>
+
+        <mat-form-field>
+          <input matInput placeholder="Project name" formControlName="projectName" readonly>
+        </mat-form-field>
+        <mat-error>
+      <span
+        *ngIf="!activityForm.get('projectName').valid && activityForm.get('projectName').touched">Please provide activity will take place</span>
+        </mat-error>
+
+        <mat-form-field>
+          <input matInput placeholder="Result area" formControlName="resultArea" readonly>
+        </mat-form-field>
+
+        <mat-error>
+      <span
+        *ngIf="!activityForm.get('resultArea').valid && activityForm.get('resultArea').touched">Please select result area</span>
+        </mat-error>
+
+        <mat-form-field>
+          <input matInput placeholder="Objective" formControlName="objective" readonly>
+        </mat-form-field>
+
+        <mat-error>
+      <span
+        *ngIf="!activityForm.get('objective').valid && activityForm.get('objective').touched">Please select objective</span>
+        </mat-error>
+
+        <mat-form-field>
+          <input matInput placeholder="Submitted by" formControlName="submittedBy" readonly>
+        </mat-form-field>
+        <mat-error>
+          <span *ngIf="!activityForm.get('submittedBy').valid && activityForm.get('submittedBy').touched">Please provide person who submitted activity</span>
+        </mat-error>
+
+        <ng-select placeholder="Position of submitting officer" [items]="positions" formControlName="officerPosition"
+                   bindLabel="displayName"
+                   bindValue="code"
+                   dropdownPosition="bottom">
+        </ng-select>
+
+        <mat-error>
+          <span *ngIf="!activityForm.get('officerPosition').valid && activityForm.get('officerPosition').touched">Please select position of submitting officer</span>
+        </mat-error>
+        <ng-select placeholder="Implementor" [items]="users" formControlName="implementor"
+                   bindLabel="displayName"
+                   bindValue="displayName"
+                   dropdownPosition="bottom">
+        </ng-select>
+        <mat-error>
+          <span *ngIf="!activityForm.get('implementor').valid && activityForm.get('implementor').touched">Please provide implementor</span>
+        </mat-error>
+
+        <button mat-raised-button color="accent">Submit</button>
+      </form>
+    </div>
+  </div>
+</div>
