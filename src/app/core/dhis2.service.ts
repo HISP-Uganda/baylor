@@ -83,11 +83,25 @@ export class Dhis2Service {
       .get(API_URL + '/trackedEntityInstances/' + entity, {params});
   }
 
-  public getTrackedEntities(program): Observable<any> {
-    const params = new HttpParams()
-      .set('paging', 'false')
-      .set('ouMode', 'ALL')
-      .set('program', program);
+  public getTrackedEntities(program, pageSize, page, search): Observable<any> {
+    let filters = {
+      pageSize,
+      totalPages: 'true',
+      page,
+      ouMode: 'ALL',
+      fields: 'trackedEntityInstance,orgUnit,attributes[attribute,value],enrollments[enrollment,program,trackedEntityInstance,' +
+        'trackedEntityType,enrollmentDate,incidentDate,orgUnit,events[program,trackedEntityInstance,event,eventDate,programStage,orgUnit,' +
+        'dataValues[dataElement,value]]',
+      program
+    };
+
+    if (search) {
+      const filter = search['attribute'] + ':EQ:' + search['value'];
+      filters = {
+        ...filters, filter
+      };
+    }
+    const params = new HttpParams({ fromObject: filters });
 
     return this.http
       .get(API_URL + '/trackedEntityInstances', {params});

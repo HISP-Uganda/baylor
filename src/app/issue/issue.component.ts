@@ -29,7 +29,7 @@ export class IssueComponent implements OnInit {
   }
 
   ngOnInit() {
-    let issues;
+    /*let issues;
     this.api
       .getTrackedEntities('bsg7cZMTqgI')
       .subscribe(
@@ -50,7 +50,7 @@ export class IssueComponent implements OnInit {
                 this.dataSource.sort = this.sort;
               }
             );
-        });
+        });*/
   }
 
   viewActions(issue) {

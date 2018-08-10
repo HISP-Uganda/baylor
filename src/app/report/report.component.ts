@@ -41,7 +41,7 @@ export class ReportComponent implements OnInit {
   }
 
   ngOnInit() {
-    let activities;
+    /*let activities;
     this.api.getTrackedEntities('MLb410Oz6cU').subscribe(response => {
       activities = response;
     }, e => console.log(e), () => {
@@ -69,7 +69,7 @@ export class ReportComponent implements OnInit {
             this.dataSource.paginator = this.paginator;
             this.dataSource.sort = this.sort;
           });
-    });
+    });*/
   }
 
   applyFilter(filterValue: string) {

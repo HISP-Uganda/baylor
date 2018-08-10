@@ -22,6 +22,8 @@ import {NgSelectModule} from '@ng-select/ng-select';
 import {FlexLayoutModule} from '@angular/flex-layout';
 
 import {MobxAngularModule} from 'mobx-angular';
+import { StorageServiceModule} from 'angular-webstorage-service';
+
 
 import {ActivityDetailComponent} from './activity/activity-detail.component';
 import {UploadModule} from './upload/upload.module';
@@ -106,7 +108,8 @@ export const MY_FORMATS = {
     TreeviewModule.forRoot(),
     NgSelectModule,
     UploadModule,
-    SplitModule
+    SplitModule,
+    StorageServiceModule
   ],
   providers: [
     BaylorStore,

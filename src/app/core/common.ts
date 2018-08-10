@@ -1,5 +1,7 @@
 import * as _ from 'lodash';
 import {TreeviewItem} from 'ngx-treeview';
+import * as Moment from 'moment';
+
 
 export function keysToCamelCase(object) {
   const camelCaseObject = _.cloneDeep(object);
@@ -20,8 +22,7 @@ export function mapProgramTrackedEntityAttributes(data) {
 
 export function mapEvents(data, dataElements) {
   dataElements = _.invert(dataElements);
-  const events = data['events'];
-  return events.map(r => {
+  return data.map(r => {
     return {
       ...r,
       ..._.fromPairs(_.map(r.dataValues, i => [dataElements[i['dataElement']], i.value]))
@@ -31,9 +32,8 @@ export function mapEvents(data, dataElements) {
 
 
 export function mapEvents2(data, dataElements) {
-  const events = data['events'];
   dataElements = _.invert(dataElements);
-  return events.map(r => {
+  return data.map(r => {
     return {
       ...r,
       dataValues: _.fromPairs(_.map(r.dataValues, i => [dataElements[i['dataElement']], i.value])),
@@ -43,15 +43,12 @@ export function mapEvents2(data, dataElements) {
 }
 
 export function mapTrackedEntityInstances(data, attributes) {
-  const results = data['trackedEntityInstances'];
-  const orgUnits = _.uniq(results.map(o => o.orgUnit)).join(',');
   attributes = _.invert(attributes);
-  return results.map(r => {
+  return data.map(r => {
     return {
       ...r,
       attributes: _.fromPairs(_.map(r.attributes, i => [i['attribute'], i.value])),
       ..._.fromPairs(_.map(r.attributes, i => [attributes[i.attribute], i.value])),
-      orgUnits,
       original: r
     };
   });
@@ -86,4 +83,30 @@ export function applyFilter(filterValue: string) {
   filterValue = filterValue.trim();
   filterValue = filterValue.toLowerCase();
   return filterValue;
+}
+
+export function compare(a, b, isAsc) {
+  return (a < b ? -1 : 1) * (isAsc ? 1 : -1);
+}
+
+export function getActivityStatus(o) {
+  let events = o['enrollments'][0]['events'];
+  events = _.filter(events, e => {
+    return e.reportStartDate !== null;
+  });
+  const date = Moment();
+  if (events.length > 0) {
+    return {activityStatus: 'complete', report: events[0]};
+  } else {
+    const d = Moment(o.plannedStartDate);
+    if (d >= date) {
+      if (d.diff(date, 'days') <= 7) {
+        return {activityStatus: 'Upcoming'};
+      } else {
+        return {activityStatus: 'On schedule'};
+      }
+    } else {
+      return {activityStatus: 'Overdue'};
+    }
+  }
 }
