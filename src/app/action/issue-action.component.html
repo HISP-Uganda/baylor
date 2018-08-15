@@ -7,8 +7,7 @@
   </mat-form-field>
 
   <div class="mat-elevation-z8">
-    <table mat-table [dataSource]="baylorStore.processedActions" matSort>
-
+    <table mat-table [dataSource]="baylorStore.processedIssueActions" matSort>
       <!-- Generic column definition -->
       <ng-container matColumnDef="activity">
         <th mat-header-cell *matHeaderCellDef mat-sort-header> Activity</th>
@@ -59,9 +58,5 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
-
-    <mat-paginator #paginator [pageSize]="baylorStore.pageInfo.pageSize" [pageSizeOptions]="[5, 15, 10, 20, 50, 100]"
-                   [showFirstLastButtons]="true" [length]="baylorStore.total" (page)="baylorStore.issuePager($event)">
-    </mat-paginator>
   </div>
 </div>

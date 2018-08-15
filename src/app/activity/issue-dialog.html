@@ -4,8 +4,8 @@
 <h1 mat-dialog-title>Adding Issue</h1>
 <div mat-dialog-content>
   <form [formGroup]="issueForm">
-    <mat-form-field *ngIf="reports.length > 0">
-      <!--<input matInput placeholder="Report" formControlName="report" readonly>-->
+    <!--<mat-form-field *ngIf="reports.length > 0">
+      <input matInput placeholder="Report" formControlName="report" readonly>
       <mat-select placeholder="Report" formControlName="report" readonly>
         <mat-option *ngFor="let r of reports" [value]="r.report">
           {{ r.displayName }}
@@ -15,7 +15,7 @@
 
     <mat-error>
       <span *ngIf="!issueForm.get('report').valid && issueForm.get('report').touched">Report is needed</span>
-    </mat-error>
+    </mat-error>-->
     <mat-form-field>
       <input matInput [matDatepicker]="picker1" placeholder="Pick registration date"
              formControlName="registrationDate">

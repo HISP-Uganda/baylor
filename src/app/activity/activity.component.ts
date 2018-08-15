@@ -1,10 +1,9 @@
-import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
-import {MatDialog, MatPaginator, MatSort} from '@angular/material';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {MatDialog} from '@angular/material';
 import {Router} from '@angular/router';
-import {AppLoadingService, Dhis2Service} from '../core';
+import {AppLoadingService} from '../core';
 import * as Moment from 'moment';
 import {FieldActivityDialogComponent} from './dialogs.component';
-import {environment} from '../../environments/environment';
 import {BaylorStore} from '../store/baylor.store';
 
 @Component({
@@ -26,17 +25,21 @@ export class ActivityComponent implements OnInit {
     // 'objective',
     'implementor',
     'activityStatus',
+    // 'oldActivityStatus',
     'action'
   ];
-  search = null;
+
   constructor(public loaderService: AppLoadingService,
               private baylorStore: BaylorStore,
               public router: Router,
               public dialog: MatDialog) {
+
   }
 
   public ngOnInit() {
+    this.baylorStore.setActivitySearches([]);
     this.baylorStore.fetchActivities();
+    this.baylorStore.setBacking(false);
   }
 
   openEditDialog(actions, data): void {
@@ -48,7 +51,6 @@ export class ActivityComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const {index} = data;
         const submissionDate = result['submissionDate'];
         const plannedStartDate = result['plannedStartDate'];
         const plannedEndDate = result['plannedEndDate'];
@@ -75,4 +77,8 @@ export class ActivityComponent implements OnInit {
     });
   }
 
+  viewReport(activityId) {
+    this.baylorStore.setFormLabel('Update');
+    this.router.navigate(['/activities', activityId]);
+  }
 }

@@ -35,7 +35,12 @@ import {ResultAreaSettingComponent} from './setting/result-area-setting/result-a
 import {ActivitySettingComponent} from './setting/activity-setting/activity-setting.component';
 import {ObjectiveSettingComponent} from './setting/objective-setting/objective-setting.component';
 
-import {ActionDialogComponent, FieldActivityDialogComponent, IssueDialogComponent} from './activity/dialogs.component';
+import {
+  ActionDialogComponent,
+  CommentDialogComponent,
+  FieldActivityDialogComponent,
+  IssueDialogComponent
+} from './activity/dialogs.component';
 
 import {
   ActivityDialogComponent,
@@ -92,7 +97,8 @@ export const MY_FORMATS = {
     OutputDialogComponent,
     OutputSettingComponent,
     FieldActivityDialogComponent,
-    IssueFormComponent
+    IssueFormComponent,
+    CommentDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -127,7 +133,8 @@ export const MY_FORMATS = {
     ResultAreaDialogComponent,
     ObjectiveDialogComponent,
     OutputDialogComponent,
-    FieldActivityDialogComponent
+    FieldActivityDialogComponent,
+    CommentDialogComponent
   ],
   bootstrap: [AppComponent]
 })

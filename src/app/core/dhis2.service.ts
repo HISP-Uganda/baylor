@@ -67,6 +67,18 @@ export class Dhis2Service {
       .get(API_URL + '/events', {params});
   }
 
+  public getProgramEvents(program, pageSize, page): Observable<any> {
+    const params = new HttpParams()
+      .set('paging', 'true')
+      .set('ouMode', 'ALL')
+      .set('program', program)
+      .set('pageSize', pageSize)
+      .set('page', page)
+      .set('fields', ':all');
+    return this.http
+      .get(API_URL + '/events', {params});
+  }
+
   public getEvents(trackedEntityInstance): Observable<any> {
     const params = new HttpParams()
       .set('paging', 'false')
@@ -84,38 +96,32 @@ export class Dhis2Service {
   }
 
   public getTrackedEntities(program, pageSize, page, search): Observable<any> {
-    let filters = {
-      pageSize,
-      totalPages: 'true',
-      page,
-      ouMode: 'ALL',
-      fields: 'trackedEntityInstance,orgUnit,attributes[attribute,value],enrollments[enrollment,program,trackedEntityInstance,' +
+    let params = new HttpParams()
+      .set('pageSize', pageSize)
+      .set('totalPages', 'true')
+      .set('ouMode', 'ALL')
+      .set('page', page)
+      .set('fields', 'trackedEntityInstance,orgUnit,attributes[attribute,value],enrollments[enrollment,program,trackedEntityInstance,' +
         'trackedEntityType,enrollmentDate,incidentDate,orgUnit,events[program,trackedEntityInstance,event,eventDate,programStage,orgUnit,' +
-        'dataValues[dataElement,value]]',
-      program
-    };
-
-    if (search) {
-      const filter = search['attribute'] + ':EQ:' + search['value'];
-      filters = {
-        ...filters, filter
-      };
-    }
-    const params = new HttpParams({ fromObject: filters });
-
-    return this.http
-      .get(API_URL + '/trackedEntityInstances', {params});
+        'dataValues[dataElement,value]]')
+      .set('program', program);
+    search.forEach(s => {
+      params = params.append('filter', s['attribute'] + ':' + s['operator'] + ':' + s['value']);
+    });
+    return this.http.get(API_URL + '/trackedEntityInstances', {params});
   }
 
   public issues(activityTransaction): Observable<any> {
     const params = new HttpParams()
       .set('paging', 'false')
       .set('ouMode', 'ALL')
-      .set('filter', 'RIxrFZS2TIe:EQ:' + activityTransaction)
+      .set('fields', 'trackedEntityInstance,orgUnit,attributes[attribute,value],enrollments[enrollment,program,trackedEntityInstance,' +
+        'trackedEntityType,enrollmentDate,incidentDate,orgUnit,events[program,trackedEntityInstance,event,eventDate,programStage,orgUnit,' +
+        'dataValues[dataElement,value]]')
+      .set('filter', 'RIxrFZS2TIe:IN:' + activityTransaction)
       .set('program', 'bsg7cZMTqgI');
 
-    return this.http
-      .get(API_URL + '/trackedEntityInstances', {params});
+    return this.http.get(API_URL + '/trackedEntityInstances', {params});
   }
 
   public getOrgUnits(units): Observable<any> {

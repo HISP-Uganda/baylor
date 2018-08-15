@@ -14,12 +14,6 @@ export function keysToCamelCase(object) {
   });
 }
 
-
-export function mapProgramTrackedEntityAttributes(data) {
-  const attributes = data['programTrackedEntityAttributes'];
-  return _.fromPairs(_.map(attributes, i => [i.id, i.displayName]));
-}
-
 export function mapEvents(data, dataElements) {
   dataElements = _.invert(dataElements);
   return data.map(r => {
@@ -47,9 +41,8 @@ export function mapTrackedEntityInstances(data, attributes) {
   return data.map(r => {
     return {
       ...r,
-      attributes: _.fromPairs(_.map(r.attributes, i => [i['attribute'], i.value])),
+      registrationDate: r['enrollments'] ? Moment(r['enrollments'][0]['enrollmentDate']).format('YYYY-MM-DD') : null,
       ..._.fromPairs(_.map(r.attributes, i => [attributes[i.attribute], i.value])),
-      original: r
     };
   });
 }
@@ -58,15 +51,31 @@ export function mapTrackedEntityInstance(data, attributes) {
   attributes = _.invert(attributes);
   return {
     ...data,
-    attributes: _.fromPairs(_.map(data['attributes'], i => [i.attribute, i.value])),
+    registrationDate: data['enrollments'] ? Moment(data['enrollments'][0]['enrollmentDate']).format('YYYY-MM-DD') : null,
     ..._.fromPairs(_.map(data['attributes'], i => [attributes[i.attribute], i.value])),
   };
 }
+
+export function mapTrackedEntityInstance2(data, attributes) {
+  attributes = _.invert(attributes);
+  return {
+    ..._.fromPairs(_.map(data['attributes'], i => [attributes[i.attribute], i.value])),
+  };
+}
+
 
 export function mapEvent(data) {
   return {
     ...data,
     dataValues: _.fromPairs(_.map(data['dataValues'], i => [i['dataElement'], i.value]))
+  };
+}
+
+export function mapEvent2(data, dataElements) {
+  dataElements = _.invert(dataElements);
+  return {
+      ...data,
+    ..._.fromPairs(_.map(data['dataValues'], i => [dataElements[i['dataElement']], i.value]))
   };
 }
 
@@ -96,17 +105,17 @@ export function getActivityStatus(o) {
   });
   const date = Moment();
   if (events.length > 0) {
-    return {activityStatus: 'complete', report: events[0]};
+    return {oldActivityStatus: 'complete', report: events[0]};
   } else {
     const d = Moment(o.plannedStartDate);
     if (d >= date) {
       if (d.diff(date, 'days') <= 7) {
-        return {activityStatus: 'Upcoming'};
+        return {oldActivityStatus: 'Upcoming'};
       } else {
-        return {activityStatus: 'On schedule'};
+        return {oldActivityStatus: 'On schedule'};
       }
     } else {
-      return {activityStatus: 'Overdue'};
+      return {oldActivityStatus: 'Overdue'};
     }
   }
 }
