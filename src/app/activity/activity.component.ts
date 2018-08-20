@@ -78,7 +78,8 @@ export class ActivityComponent implements OnInit {
   }
 
   viewReport(activityId) {
-    this.baylorStore.setFormLabel('Update');
+    // this.baylorStore.setFormLabel('Update');
+    this.baylorStore.setCurrentActivity(activityId);
     this.router.navigate(['/activities', activityId]);
   }
 }

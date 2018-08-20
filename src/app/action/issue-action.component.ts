@@ -21,7 +21,7 @@ export class IssueActionComponent implements OnInit {
   ngOnInit() {
     this.route.paramMap.subscribe(params => {
       const issueId = params.get('issue');
-      this.baylorStore.setCurrentIssue2(issueId);
+      this.baylorStore.setCurrentIssue(issueId);
     });
   }
 }

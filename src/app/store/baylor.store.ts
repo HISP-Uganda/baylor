@@ -14,7 +14,7 @@ import {
 } from '../core';
 import {Inject, Injectable} from '@angular/core';
 import * as mobx from 'mobx';
-import {action, computed, observable} from 'mobx';
+import {action, computed, observable, toJS} from 'mobx';
 import * as _ from 'lodash';
 import {MatTableDataSource, Sort} from '@angular/material';
 import {LOCAL_STORAGE, WebStorageService} from 'angular-webstorage-service';
@@ -82,7 +82,7 @@ export class BaylorStore {
 
   @action setFormLabel = label => {
     this.formLabel = label;
-  }
+  };
 
   @action fetchActivities = () => {
     if (!this.backing) {
@@ -194,9 +194,9 @@ export class BaylorStore {
     this.currentIssue = _.find(this.issues, {trackedEntityInstance: issueId});
   };
 
-  @action setCurrentIssue2 = issueId => {
+  /*@action setCurrentIssue2 = issueId => {
     this.currentIssue = _.find(this.issues, {trackedEntityInstance: issueId});
-  };
+  };*/
 
   @action setCurrentActivity = activityId => {
     this.currentActivity = _.find(this.activities, {trackedEntityInstance: activityId});
@@ -457,18 +457,26 @@ export class BaylorStore {
     return this.user;
   }
 
-  /*
-    @computed get processedReportIssues() {
-      const data = this.issues.map(r => {
-        const a = mapTrackedEntityInstance(r, issueAttributes);
-        return {
-          ...a,
-          orgUnitName: this.activityUnits ? this.activityUnits[r.orgUnit] : '',
-        };
-      });
-      return new MatTableDataSource<any>(data);
+  @computed get processedReportIssues() {
+    let report = '';
+
+    if (this.currentActivity['enrollments'].length > 0 &&
+      this.currentActivity['enrollments'][0]['events'] &&
+      this.currentActivity['enrollments'][0]['events'].length > 0) {
+      report = this.currentActivity['enrollments'][0]['events'][0]['event'];
     }
-    */
+    const issues = _.filter(this.issues, (issue) => {
+      return _.find(issue.attributes, {attribute: issueAttributes.report, value: report});
+    });
+    const data = issues.map(r => {
+      const a = mapTrackedEntityInstance(r, issueAttributes);
+      return {
+        ...a,
+        orgUnitName: this.activityUnits ? this.activityUnits[r['orgUnit']] : '',
+      };
+    });
+    return new MatTableDataSource<any>(data);
+  }
 
   @computed get processedIssues() {
     const data = this.issues.map(r => {
@@ -532,7 +540,16 @@ export class BaylorStore {
         ids = [...ids, a['enrollments'][0]['events'][0]['event']];
       }
     });
+    return ids.join(';');
+  }
 
+  @computed get activityReportId() {
+    let ids = [];
+    this.activities.forEach(a => {
+      if (a['enrollments'].length > 0 && a['enrollments'][0]['events'] && a['enrollments'][0]['events'].length > 0) {
+        ids = [...ids, a['enrollments'][0]['events'][0]['event']];
+      }
+    });
     return ids.join(';');
   }
 
@@ -577,14 +594,14 @@ export class BaylorStore {
   @computed get canSeeSettings() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser']);
     }
   }
 
   @computed get canApproveReport() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser', 'Activity supervisor']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser', 'Activity supervisor']);
     }
   }
 
@@ -592,7 +609,7 @@ export class BaylorStore {
     const user = this.storage.get('user');
     if (user) {
       const roles = _.map(user.userCredentials.userRoles, 'name');
-      if (this.includes(roles, ['System Administrator', 'Superuser'])) {
+      if (this.includes(roles, ['Systems Administrator', 'Superuser'])) {
         return null;
       } else {
         return {attribute: activityAttributes['implementor'], value: user.displayName, operator: 'EQ'};
@@ -604,7 +621,7 @@ export class BaylorStore {
     const user = this.storage.get('user');
     if (user) {
       const roles = _.map(user.userCredentials.userRoles, 'name');
-      if (this.includes(roles, ['System Administrator', 'Superuser'])) {
+      if (this.includes(roles, ['Systems Administrator', 'Superuser'])) {
         return null;
       } else {
         return {
@@ -619,63 +636,63 @@ export class BaylorStore {
   @computed get canAddActivity() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser', 'Activity supervisor']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser', 'Activity supervisor']);
     }
   }
 
   @computed get canAddReport() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
     }
   }
 
   @computed get canAddIssue() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
     }
   }
 
   @computed get canAddAction() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
     }
   }
 
   @computed get canEditActivity() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser', 'Activity supervisor']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser', 'Activity supervisor']);
     }
   }
 
   @computed get canEditReport() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
     }
   }
 
   @computed get canEditIssue() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
     }
   }
 
   @computed get canEditAction() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
     }
   }
 
   @computed get canDeleteActivity() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser', 'Activity supervisor']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser', 'Activity supervisor']);
     }
   }
 
@@ -683,21 +700,21 @@ export class BaylorStore {
   @computed get canDeleteReport() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
     }
   }
 
   @computed get canDeleteIssue() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
     }
   }
 
   @computed get canDeleteAction() {
     if (this.userDetails) {
       const roles = _.map(this.userDetails.userCredentials.userRoles, 'name');
-      return this.includes(roles, ['System Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
+      return this.includes(roles, ['Systems Administrator', 'Superuser', 'Activity supervisor', 'EndUser1']);
     }
   }
 }

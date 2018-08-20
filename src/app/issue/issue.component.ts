@@ -1,11 +1,10 @@
 import {Component, OnInit} from '@angular/core';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {Router} from '@angular/router';
-import {actionDataElements, AppLoadingService, Dhis2Service, issueAttributes} from '../core';
-import {ActionDialogComponent, IssueDialogComponent} from '../activity/dialogs.component';
-import * as _ from 'lodash';
-import * as Moment from 'moment';
+import {AppLoadingService, Dhis2Service} from '../core';
+import {ActionDialogComponent} from '../activity/dialogs.component';
 import {BaylorStore} from '../store/baylor.store';
+import * as Moment from 'moment';
 
 @Component({
   selector: 'app-issue',
@@ -38,6 +37,20 @@ export class IssueComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        const actionStartDate = result['actionStartDate'];
+        const actionEndDate = result['actionEndDate'];
+
+        if (actionEndDate instanceof Moment) {
+          result['actionEndDate'] = result['actionEndDate'].format('YYYY-MM-DD');
+        } else if (Object.prototype.toString.call(actionEndDate) === '[object Date]') {
+          result['actionEndDate'] = Moment(actionEndDate).format('YYYY-MM-DD');
+        }
+
+        if (actionStartDate instanceof Moment) {
+          result['actionStartDate'] = result['actionStartDate'].format('YYYY-MM-DD');
+        } else if (Object.prototype.toString.call(actionStartDate) === '[object Date]') {
+          result['actionStartDate'] = Moment(actionStartDate).format('YYYY-MM-DD');
+        }
         this.baylorStore.addAction(issue, result);
       }
     });

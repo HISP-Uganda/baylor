@@ -13,7 +13,7 @@
       <mat-toolbar class="c1r1_header">
         Activity Report
       </mat-toolbar>
-      <form [formGroup]="reportForm" (ngSubmit)="onFormSubmit(reportForm.value)" *ngIf="selectedActivity !== null">
+      <form [formGroup]="reportForm" (ngSubmit)="onFormSubmit(reportForm.value)">
         <mat-form-field>
           <input matInput [matDatepicker]="picker2" [max]="maxDate" placeholder="Activity start date"
                  formControlName="reportStartDate">

@@ -110,6 +110,20 @@ export class ActivityDetailComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
+        const actionStartDate = result['actionStartDate'];
+        const actionEndDate = result['actionEndDate'];
+
+        if (actionEndDate instanceof Moment) {
+          result['actionEndDate'] = result['actionEndDate'].format('YYYY-MM-DD');
+        } else if (Object.prototype.toString.call(actionEndDate) === '[object Date]') {
+          result['actionEndDate'] = Moment(actionEndDate).format('YYYY-MM-DD');
+        }
+
+        if (actionStartDate instanceof Moment) {
+          result['actionStartDate'] = result['actionStartDate'].format('YYYY-MM-DD');
+        } else if (Object.prototype.toString.call(actionStartDate) === '[object Date]') {
+          result['actionStartDate'] = Moment(actionStartDate).format('YYYY-MM-DD');
+        }
         this.baylorStore.addAction(issue, result);
       }
     });
