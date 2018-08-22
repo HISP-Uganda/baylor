@@ -81,9 +81,12 @@
           *ngIf="!reportForm.get('lessons').valid && reportForm.get('lessons').touched">Please provide lessons</span>
         </mat-error>
 
+        <input type="file" id="avatar" (change)="baylorStore.onFileChange($event)" #fileInput>
+        <br>
+        <br>
         <button mat-raised-button color="accent" [disabled]="!reportForm.valid">{{baylorStore.currentLabel}}</button>&nbsp;
-        <app-upload *ngIf="baylorStore.processedActivity['download'] == null" [owner]="baylorStore.reportFormData"
-                    field="yxGmEyvPfwl"></app-upload>&nbsp;
+        <!--<app-upload *ngIf="baylorStore.processedActivity['download'] == null" [owner]="baylorStore.reportFormData"-->
+        <!--field="yxGmEyvPfwl"></app-upload>&nbsp;-->
         <button mat-raised-button color="accent" (click)="back()">Back</button>&nbsp;
       </form>
     </div>

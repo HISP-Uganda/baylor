@@ -11,7 +11,7 @@ import {TokenInterceptor} from './token.interceptor';
   providers: [
     AppLoadingService,
     Dhis2Service,
-   /* {
+    /*{
       provide: HTTP_INTERCEPTORS,
       useClass: TokenInterceptor,
       multi: true

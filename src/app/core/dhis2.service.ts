@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {environment} from '../../environments/environment';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {Observable} from 'rxjs';
+import {HttpRequest} from '../../../node_modules/@angular/common/http';
 
 const API_URL = environment.apiUrl;
 
@@ -170,5 +171,12 @@ export class Dhis2Service {
       .set('paging', 'false');
     return this.http
       .get(API_URL + '/users', {params});
+  }
+
+  public upload(formData) {
+    const req = new HttpRequest('POST', API_URL + '/fileResources' + '', formData, {
+      reportProgress: true
+    });
+    return this.http.request(req);
   }
 }

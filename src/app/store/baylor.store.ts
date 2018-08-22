@@ -14,13 +14,14 @@ import {
 } from '../core';
 import {Inject, Injectable} from '@angular/core';
 import * as mobx from 'mobx';
-import {action, computed, observable, toJS} from 'mobx';
+import {action, computed, observable} from 'mobx';
 import * as _ from 'lodash';
 import {MatTableDataSource, Sort} from '@angular/material';
 import {LOCAL_STORAGE, WebStorageService} from 'angular-webstorage-service';
 import * as Moment from 'moment';
 
 import {environment} from '../../environments/environment';
+import {HttpEventType} from '@angular/common/http';
 
 
 mobx.configure({enforceActions: true});
@@ -64,6 +65,9 @@ export class BaylorStore {
 
   @observable activitySearches = [];
   @observable issueSearches = [];
+
+  @observable reportUploadId = null;
+  @observable percentageUpload = 0;
 
   constructor(
     private dhis2Service: Dhis2Service,
@@ -117,6 +121,23 @@ export class BaylorStore {
         this.total = pager.total;
         this.issues = trackedEntityInstances;
       }), e => console.log(e));
+  };
+
+  @action onFileChange = (event) => {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      const formData: FormData = new FormData();
+      formData.append('file', file, file.name);
+      this.dhis2Service.upload(formData).subscribe(action(e => {
+        if (e['type'] === HttpEventType.UploadProgress) {
+          this.percentageUpload = Math.round(100 * e['loaded'] / e['total']);
+        } else {
+          this.reportUploadId = e['body']['response']['fileResource']['id'];
+        }
+      }), e => {
+        console.log(e);
+      });
+    }
   };
 
   @action fetchUnits = ids => {
@@ -405,7 +426,7 @@ export class BaylorStore {
       return {
         ...a,
         orgUnitName: this.activityUnits ? this.activityUnits[r.orgUnit] : '',
-        download: report ? API_URL + 'eventUid=' + report['value'] + '&dataElementUid=yxGmEyvPfwl' : null,
+        download: report ? API_URL + 'eventUid=' + r['enrollments'][0]['events'][0]['event'] + '&dataElementUid=yxGmEyvPfwl' : null,
         reportStatus,
         activityStatus,
         canImplement,

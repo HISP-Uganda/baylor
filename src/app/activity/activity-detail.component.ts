@@ -10,6 +10,10 @@ import {Observable} from 'rxjs/internal/Observable';
 import {AppLoadingService, Dhis2Service, issueAttributes, reportDataElements} from '../core';
 import {BaylorStore} from '../store/baylor.store';
 import {generateUid} from '../core/uid';
+import {environment} from '../../environments/environment';
+
+const url = environment.apiUrl + '/fileResources';
+
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -32,6 +36,7 @@ export class ActivityDetailComponent implements OnInit {
               public dialog: MatDialog,
               private baylorStore: BaylorStore,
               public loaderService: AppLoadingService) {
+    this.baylorStore.reportUploadId = null;
   }
 
   public ngOnInit() {
@@ -139,13 +144,13 @@ export class ActivityDetailComponent implements OnInit {
       achievements: [null],
       constraints: [null],
       lessons: [null],
+      report: [null],
       reportStatus: ['Pending Approval']
     });
     this.reportForm.patchValue(this.baylorStore.reportFormData);
   }
 
   onFormSubmit(form: NgForm) {
-
     const rsd = form['reportStartDate'];
     const red = form['reportEndDate'];
     const rd = form['reportDate'];
@@ -167,6 +172,11 @@ export class ActivityDetailComponent implements OnInit {
     } else if (Object.prototype.toString.call(rd) === '[object Date]') {
       form['reportDate'] = Moment(rd).format('YYYY-MM-DD');
     }
+
+    if (this.baylorStore.reportUploadId !== null) {
+      form['report'] = this.baylorStore.reportUploadId;
+    }
+
     let dataValues = [];
     _.forOwn(reportDataElements, function (dataElement, key) {
       if (form[key]) {
