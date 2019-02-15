@@ -84,7 +84,8 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
-    <mat-paginator #paginator [pageSize]="baylorStore.pageInfo.pageSize" [pageSizeOptions]="[5, 15, 10, 20, 50, 100]"
+    <mat-paginator #paginator [pageSize]="baylorStore.pageInfo.pageSize"
+                   [pageSizeOptions]="[5, 15, 10, 20, 50, 100, 250, 500]"
                    [showFirstLastButtons]="true" [length]="baylorStore.total" (page)="baylorStore.pager($event)">
     </mat-paginator>
   </div>
