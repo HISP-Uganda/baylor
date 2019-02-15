@@ -3,8 +3,9 @@ import {AfterViewInit, ChangeDetectorRef, Component, Inject, OnInit} from '@angu
 import {MAT_DIALOG_DATA, MatDialogRef} from '@angular/material';
 import * as Moment from 'moment';
 import {AppLoadingService, Dhis2Service} from '../core';
-import * as _ from 'lodash';
 import {Observable} from 'rxjs/internal/Observable';
+import {BaylorStore} from '../store/baylor.store';
+import {generateUid} from '../core/uid';
 
 @Component({
   selector: 'app-field-report-dialog',
@@ -15,7 +16,6 @@ export class FieldActivityDialogComponent implements OnInit, AfterViewInit {
 
   positions: Observable<any[]>;
   users: Observable<any[]>;
-  orgUnits = [];
   currentUser = {};
   activities = [];
   projects = [];
@@ -32,38 +32,6 @@ export class FieldActivityDialogComponent implements OnInit, AfterViewInit {
   }
 
   public ngOnInit() {
-    this.api
-      .getFromDataStore('baylor', 'activities')
-      .subscribe(
-        (activities) => {
-          this.activities = activities;
-        }, error1 => console.log(error1), () => {
-        });
-
-    this.api
-      .getFromDataStore('baylor', 'projects')
-      .subscribe(
-        (projects) => {
-          this.projects = projects;
-        }, error1 => console.log(error1), () => {
-        });
-
-    this.api
-      .getFromDataStore('baylor', 'resultAreas')
-      .subscribe(
-        (resultAreas) => {
-          this.resultAreas = resultAreas;
-        }, error1 => console.log(error1), () => {
-        });
-
-    this.api
-      .getFromDataStore('baylor', 'objectives')
-      .subscribe(
-        (objectives) => {
-          this.objectives = objectives;
-        }, error1 => console.log(error1), () => {
-        });
-
     this.api.getUserDetails().subscribe(u => {
       const submittedBy = this.activityForm.get('submittedBy');
       submittedBy.setValue(u['displayName']);
@@ -77,16 +45,6 @@ export class FieldActivityDialogComponent implements OnInit, AfterViewInit {
       this.users = response['users'];
     });
     this.createForm();
-
-    this.activityForm.controls['activityCode'].valueChanges.subscribe((value) => {
-      const {resultArea, activityName, activityCode} = _.find(this.activities, {activityCode: value});
-      const {objective} = _.find(this.resultAreas, {resultAreaCode: resultArea.resultAreaCode});
-      const {project} = _.find(this.objectives, {objectiveCode: objective.objectiveCode});
-      this.activityForm.controls['resultArea'].patchValue(resultArea.resultAreaCode + ' - ' + resultArea.resultAreaName);
-      this.activityForm.controls['objective'].patchValue(objective.objectiveCode + ' - ' + objective.objectiveName);
-      this.activityForm.controls['activity'].patchValue(activityCode + ' - ' + activityName);
-      this.activityForm.controls['projectName'].patchValue(project.projectCode + ' - ' + project.projectName);
-    });
   }
 
   ngAfterViewInit(): void {
@@ -100,6 +58,7 @@ export class FieldActivityDialogComponent implements OnInit, AfterViewInit {
 
   createForm() {
     this.activityForm = this.fb.group({
+      trackedEntityInstance: [null],
       activityCode: [null, Validators.required],
       transactionCode: [null, Validators.required],
       activity: [null, Validators.required],
@@ -130,7 +89,7 @@ export class FieldActivityDialogComponent implements OnInit, AfterViewInit {
       return d >= startDate.value;
     }
     return false;
-  }
+  };
 
 }
 
@@ -147,6 +106,7 @@ export class IssueDialogComponent implements OnInit, AfterViewInit {
 
   constructor(private cdr: ChangeDetectorRef, public loaderService: AppLoadingService,
               private api: Dhis2Service,
+              private baylorStore: BaylorStore,
               public dialogRef: MatDialogRef<IssueDialogComponent>,
               @Inject(MAT_DIALOG_DATA) public data: any,
               private fb: FormBuilder) {
@@ -163,8 +123,13 @@ export class IssueDialogComponent implements OnInit, AfterViewInit {
     this.api.getAllUserDetails().subscribe(response => {
       this.users = response['users'];
     });
-    if (this.data['report']) {
-      this.reports = [{report: this.data['report']['event'], displayName: this.data['report']['dataValues']['reportTitle']}];
+    this.data = {
+      ...this.data, transactionCode: this.baylorStore.processedActivity['transactionCode'],
+      report: this.baylorStore.reportFormData['event']
+    };
+
+    if (!this.data.trackedEntityInstance) {
+      this.data = {...this.data, trackedEntityInstance: generateUid()};
     }
     this.createForm();
   }
@@ -184,13 +149,13 @@ export class IssueDialogComponent implements OnInit, AfterViewInit {
       issue: [null, Validators.required],
       technicalArea: [null, Validators.required],
       transactionCode: [null, Validators.required],
+      activity: [null],
       report: [null, Validators.required],
       trackedEntityInstance: [null],
       issueStatus: ['New'],
       responsiblePerson: [null],
       expectedResolutionDate: [null],
     });
-
     this.issueForm.patchValue(this.data);
   }
 
@@ -222,6 +187,10 @@ export class ActionDialogComponent implements OnInit, AfterViewInit {
     this.api.getAllUserDetails().subscribe(response => {
       this.users = response['users'];
     });
+
+    if (!this.data.event) {
+      this.data = {...this.data, event: generateUid()};
+    }
     this.createForm();
   }
 
@@ -247,5 +216,39 @@ export class ActionDialogComponent implements OnInit, AfterViewInit {
     });
 
     this.actionForm.patchValue(this.data);
+  }
+}
+
+@Component({
+  selector: 'app-comment-dialog',
+  templateUrl: 'comment-dialog.html',
+})
+export class CommentDialogComponent implements OnInit, AfterViewInit {
+  commentForm: FormGroup;
+
+  constructor(private cdr: ChangeDetectorRef, public loaderService: AppLoadingService,
+              private api: Dhis2Service, public dialogRef: MatDialogRef<ActionDialogComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: any, private fb: FormBuilder) {
+  }
+
+  public ngOnInit() {
+    this.createForm();
+  }
+
+  ngAfterViewInit(): void {
+    this.loaderService.isLoading.next(false);
+    this.cdr.detectChanges();
+  }
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+
+  createForm() {
+    this.commentForm = this.fb.group({
+      comment: [null],
+    });
+
+    this.commentForm.patchValue(this.data);
   }
 }

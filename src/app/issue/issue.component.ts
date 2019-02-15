@@ -1,11 +1,10 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {MatDialog, MatPaginator, MatSnackBar, MatSort, MatTableDataSource} from '@angular/material';
-import {ActivatedRoute, Router} from '@angular/router';
-import {actionDataElements, AppLoadingService, Dhis2Service, issueAttributes, mapOrgUnits, mapTrackedEntityInstances} from '../core';
+import {Component, OnInit} from '@angular/core';
+import {MatDialog, MatSnackBar} from '@angular/material';
+import {Router} from '@angular/router';
+import {AppLoadingService, Dhis2Service} from '../core';
 import {ActionDialogComponent} from '../activity/dialogs.component';
-import * as _ from 'lodash';
-import * as Moment from 'moment';
 import {BaylorStore} from '../store/baylor.store';
+import * as Moment from 'moment';
 
 @Component({
   selector: 'app-issue',
@@ -14,64 +13,56 @@ import {BaylorStore} from '../store/baylor.store';
 })
 export class IssueComponent implements OnInit {
 
-  dataSource = null;
-  issues = [];
-
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
-
-  displayedColumns = ['transactionCode', 'orgUnitName', 'issue', 'issueStatus', 'action'];
+  displayedColumns = ['activity', 'issue', 'registrationDate', 'orgUnitName', 'reportedBy', 'responsiblePerson', 'issueStatus', 'action'];
 
   constructor(public dialog: MatDialog, public loaderService: AppLoadingService,
               private api: Dhis2Service, public router: Router,
-              private baylorStore: BaylorStore,
-              private route: ActivatedRoute, public snackBar: MatSnackBar) {
+              private baylorStore: BaylorStore, public snackBar: MatSnackBar) {
   }
 
   ngOnInit() {
-    let issues;
-    this.api
-      .getTrackedEntities('bsg7cZMTqgI')
-      .subscribe(
-        (response) => {
-          issues = response;
-        }, e => console.log(e), () => {
-          this.issues = mapTrackedEntityInstances(issues, issueAttributes);
-          this.api
-            .getOrgUnits(this.issues[0].orgUnits)
-            .subscribe(
-              (orgUnits) => {
-                orgUnits = mapOrgUnits(orgUnits);
-                this.issues = this.issues.map((e) => {
-                  return {...e, orgUnitName: orgUnits[e.orgUnit]};
-                });
-                this.dataSource = new MatTableDataSource<any>(this.issues);
-                this.dataSource.paginator = this.paginator;
-                this.dataSource.sort = this.sort;
-              }
-            );
-        });
+    this.baylorStore.setIssueSearches([]);
+    this.baylorStore.fetchIssues();
   }
 
   viewActions(issue) {
     this.router.navigate(['/actions', issue.trackedEntityInstance]);
-
   }
 
-  applyFilter(filterValue: string) {
-    filterValue = filterValue.trim();
-    filterValue = filterValue.toLowerCase();
-    this.dataSource.filter = filterValue;
-  }
-
-  openActionDialog(data, issue, index): void {
+  openActionDialog(data, issue): void {
     data.issue = issue.issue;
     const dialogRef = this.dialog.open(ActionDialogComponent, {
       data,
       width: '600px'
     });
     dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
+      if (result) {
+        const actionStartDate = result['actionStartDate'];
+        const actionEndDate = result['actionEndDate'];
+
+        if (actionEndDate instanceof Moment) {
+          result['actionEndDate'] = result['actionEndDate'].format('YYYY-MM-DD');
+        } else if (Object.prototype.toString.call(actionEndDate) === '[object Date]') {
+          result['actionEndDate'] = Moment(actionEndDate).format('YYYY-MM-DD');
+        }
+
+        if (actionStartDate instanceof Moment) {
+          result['actionStartDate'] = result['actionStartDate'].format('YYYY-MM-DD');
+        } else if (Object.prototype.toString.call(actionStartDate) === '[object Date]') {
+          result['actionStartDate'] = Moment(actionStartDate).format('YYYY-MM-DD');
+        }
+        this.baylorStore.addAction(issue, result);
+      }
+    });
+  }
+
+  /*openActionDialog(data, issue, index): void {
+    data.issue = issue.issue;
+    const dialogRef = this.dialog.open(ActionDialogComponent, {
+      data,
+      width: '600px'
+    });
+    dialogRef.afterClosed().subscribe(result => {
       if (result) {
         const ecd = result['actionStartDate'];
         const od = result['actionEndDate'];
@@ -140,14 +131,14 @@ export class IssueComponent implements OnInit {
                 duration: 2000,
               });
             }, () => {
-              this.issues[index] = issue;
-              this.dataSource = new MatTableDataSource<any>(this.issues);
-              this.dataSource.paginator = this.paginator;
-              this.dataSource.sort = this.sort;
+              // this.issues[index] = issue;
+              // this.dataSource = new MatTableDataSource<any>(this.issues);
+              // this.dataSource.paginator = this.paginator;
+              // this.dataSource.sort = this.sort;
             });
           }
         });
       }
     });
-  }
+  }*/
 }

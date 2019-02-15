@@ -2,9 +2,9 @@ import {Component, Input} from '@angular/core';
 import {MatDialog, MatSnackBar} from '@angular/material';
 import {DialogComponent} from './dialog/dialog.component';
 import * as _ from 'lodash';
-import * as Moment from 'moment';
 import {Router} from '@angular/router';
 import {Dhis2Service, reportDataElements} from '../core';
+import {BaylorStore} from '../store/baylor.store';
 
 @Component({
   selector: 'app-upload',
@@ -15,7 +15,9 @@ export class UploadComponent {
   @Input() owner;
   @Input() field: string;
 
-  constructor(public dialog: MatDialog, public api: Dhis2Service, public snackBar: MatSnackBar, public router: Router) {
+  constructor(public dialog: MatDialog, public api: Dhis2Service,
+              public snackBar: MatSnackBar, public router: Router,
+              private baylorStore: BaylorStore) {
   }
 
   public openUploadDialog() {
@@ -39,15 +41,19 @@ export class UploadComponent {
         status: 'COMPLETED',
         event: this.owner.event,
         programStage: 'FxImolXHCbY',
-        eventDate: Moment(this.owner['eventDate']).format('YYYY-MM-DD'),
+        eventDate: this.owner['eventDate'],
         dataValues
       };
-      this.api.postEvent(event).subscribe(e => {
-        this.snackBar.open('Report uploaded successfully', 'OK', {
-          duration: 2000,
-        });
-        this.router.navigate(['/activities', this.owner['trackedEntityInstance']]);
-      });
+
+      console.log(event);
+
+      this.baylorStore.addReport(event);
+      // this.api.postEvent(event).subscribe(e => {
+      //   this.snackBar.open('Report uploaded successfully', 'OK', {
+      //     duration: 2000,
+      //   });
+      //   this.router.navigate(['/activities', this.owner['trackedEntityInstance']]);
+      // });
     });
   }
 }

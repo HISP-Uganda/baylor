@@ -1,49 +1,27 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
-import {MatPaginator, MatSort, MatTableDataSource} from '@angular/material';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import * as _ from 'lodash';
-import {actionDataElements, AppLoadingService, Dhis2Service, mapEvents} from '../core';
+import {actionDataElements, AppLoadingService, Dhis2Service} from '../core';
+import {BaylorStore} from '../store/baylor.store';
 
 @Component({
   selector: 'app-issue-action',
-  templateUrl: './action.component.html',
+  templateUrl: './issue-action.component.html',
   styleUrls: ['./action.component.css']
 })
 export class IssueActionComponent implements OnInit {
 
-  dataSource = null;
 
-  @ViewChild(MatPaginator) paginator: MatPaginator;
-  @ViewChild(MatSort) sort: MatSort;
+  displayedColumns = ['activity', 'issue', ..._.keys(actionDataElements)];
 
-  displayedColumns = _.keys(actionDataElements);
-
-  constructor(public loaderService: AppLoadingService, private api: Dhis2Service, public router: Router, private route: ActivatedRoute) {
+  constructor(public loaderService: AppLoadingService, private baylorStore: BaylorStore,
+              private api: Dhis2Service, public router: Router, private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-
-    let actions;
     this.route.paramMap.subscribe(params => {
       const issueId = params.get('issue');
-      this.api
-        .getEvents(issueId)
-        .subscribe(
-          (response) => {
-            actions = response;
-          }, e => console.log(e), () => {
-            actions = mapEvents(actions, actionDataElements);
-            console.log(actions);
-            this.dataSource = new MatTableDataSource<any>(actions);
-            this.dataSource.paginator = this.paginator;
-            this.dataSource.sort = this.sort;
-          });
+      this.baylorStore.setCurrentIssue(issueId);
     });
-  }
-
-  applyFilter(filterValue: string) {
-    filterValue = filterValue.trim();
-    filterValue = filterValue.toLowerCase();
-    this.dataSource.filter = filterValue;
   }
 }

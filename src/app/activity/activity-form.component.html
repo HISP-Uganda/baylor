@@ -40,7 +40,7 @@
         </mat-error>
 
         <mat-form-field>
-          <input matInput placeholder="Activity" formControlName="activity" readonly>
+          <input matInput placeholder="Activity" formControlName="activity">
         </mat-form-field>
         <mat-error>
           <span *ngIf="!activityForm.get('activity').valid && activityForm.get('activity').touched">Please provide activity name</span>

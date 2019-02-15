@@ -1,14 +1,9 @@
 <h1 mat-dialog-title>Editing Activity</h1>
 <div mat-dialog-content>
   <form [formGroup]="activityForm">
-    <ng-select placeholder="Activity Code" [items]="activities" formControlName="activityCode"
-               bindLabel="activityName"
-               bindValue="activityCode"
-               dropdownPosition="bottom">
-      <ng-template ng-label-tmp let-item="item">
-        {{ item.activityCode }} - {{ item.financialYear }} - {{item.activityName}}
-      </ng-template>
-    </ng-select>
+    <mat-form-field>
+      <input matInput placeholder="Activity code" formControlName="activityCode" readonly>
+    </mat-form-field>
     <mat-error>
       <span *ngIf="!activityForm.get('activityCode').valid && activityForm.get('activityCode').touched">
         Please provide activity code

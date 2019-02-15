@@ -22,6 +22,8 @@ import {NgSelectModule} from '@ng-select/ng-select';
 import {FlexLayoutModule} from '@angular/flex-layout';
 
 import {MobxAngularModule} from 'mobx-angular';
+import { StorageServiceModule} from 'angular-webstorage-service';
+
 
 import {ActivityDetailComponent} from './activity/activity-detail.component';
 import {UploadModule} from './upload/upload.module';
@@ -33,7 +35,12 @@ import {ResultAreaSettingComponent} from './setting/result-area-setting/result-a
 import {ActivitySettingComponent} from './setting/activity-setting/activity-setting.component';
 import {ObjectiveSettingComponent} from './setting/objective-setting/objective-setting.component';
 
-import {ActionDialogComponent, FieldActivityDialogComponent, IssueDialogComponent} from './activity/dialogs.component';
+import {
+  ActionDialogComponent,
+  CommentDialogComponent,
+  FieldActivityDialogComponent,
+  IssueDialogComponent
+} from './activity/dialogs.component';
 
 import {
   ActivityDialogComponent,
@@ -90,7 +97,8 @@ export const MY_FORMATS = {
     OutputDialogComponent,
     OutputSettingComponent,
     FieldActivityDialogComponent,
-    IssueFormComponent
+    IssueFormComponent,
+    CommentDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -106,7 +114,8 @@ export const MY_FORMATS = {
     TreeviewModule.forRoot(),
     NgSelectModule,
     UploadModule,
-    SplitModule
+    SplitModule,
+    StorageServiceModule
   ],
   providers: [
     BaylorStore,
@@ -124,7 +133,8 @@ export const MY_FORMATS = {
     ResultAreaDialogComponent,
     ObjectiveDialogComponent,
     OutputDialogComponent,
-    FieldActivityDialogComponent
+    FieldActivityDialogComponent,
+    CommentDialogComponent
   ],
   bootstrap: [AppComponent]
 })

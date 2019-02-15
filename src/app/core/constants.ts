@@ -2,6 +2,7 @@ export const activityAttributes = {
   activityCode: 'BM1qjC9ke9m',
   transactionCode: 'VLWHxrfUs9T',
   activity: 'fFdw1k3qOTs',
+  activityStatus: 'VthSILjZleK',
   plannedStartDate: 'S3u1kJtu3F3',
   plannedEndDate: 'ONjxIAJocCi',
   submissionDate: 'X0OSI18FHp6',
@@ -23,26 +24,29 @@ export const reportDataElements = {
   constraints: 'R9vh1aiBWJT',
   lessons: 'F7RpXNihiHI',
   report: 'yxGmEyvPfwl',
-  reportStatus: 'wuc2PKLJoRI'
+  reportStatus: 'wuc2PKLJoRI',
+  comment: 'UO0Tan0Y8M9'
 };
 
 
 export const actionDataElements = {
   action: 'r7rY6fZhPtJ',
-  currentIssueStatus: 'eQve0e2UQZB',
+  actionDescription: 'uF8CZbF5Kyb',
   actionStartDate: 'wkNRYneBckD',
   actionEndDate: 'HzV3uTFF5Dk',
   actionTakenBy: 'utFCefwUzgS',
-  actionDescription: 'uF8CZbF5Kyb',
+  currentIssueStatus: 'eQve0e2UQZB',
 };
 
 export const issueAttributes = {
+  activity: 'fFdw1k3qOTs',
   issue: 'Rx5m6JIiwsD',
   technicalArea: 'cUAfyTK25b0',
   transactionCode: 'VLWHxrfUs9T',
   report: 'RIxrFZS2TIe',
   issueStatus: 'aPPyoe3xwaH',
   responsiblePerson: 'uusr7MxWHCU',
+  reportedBy: 'LthinvWtSaV',
   expectedResolutionDate: 'RDw6wqmcP0H'
 };
 

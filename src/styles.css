@@ -31,6 +31,8 @@ table {
 .complete,
 .active,
 .resolved,
+.ReportSubmitted,
+.Approved,
 .Resolved {
   background-color: green;
 }
@@ -40,12 +42,26 @@ table {
 .approaching,
 .Approaching,
 .Upcoming,
+.Ongoing,
 .Pending {
   background-color: yellow;
 }
 
+.Implemented {
+  background-color: #DADD98;
+}
+
+.ReportApproved {
+  background-color: #4B6F44;
+}
+
+/*.ReportSubmitted {*/
+/*background-color: #8A9A5B;*/
+/*}*/
+
 .overdue,
 .Overdue,
+.Rejected,
 .closed,
 .New,
 .Closed {

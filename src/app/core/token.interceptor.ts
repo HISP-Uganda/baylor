@@ -14,7 +14,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
     request = request.clone({
       setHeaders: {
-        Authorization: 'Basic ' + btoa('admin:district')
+        Authorization: 'Basic ' + btoa('carapai:Charles@123$')
       }
     });
     return next.handle(request);

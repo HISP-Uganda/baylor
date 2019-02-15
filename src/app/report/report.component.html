@@ -6,7 +6,7 @@
     <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
   </mat-form-field>
   <div class="mat-elevation-z8">
-    <table mat-table #table [dataSource]="dataSource" matSort>
+    <table mat-table #table [dataSource]="baylorStore.processedReports" matSort>
 
       <ng-container matColumnDef="activity">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Activity</th>
@@ -28,27 +28,43 @@
         <td mat-cell *matCellDef="let element"> {{element.orgUnitName}}</td>
       </ng-container>
 
+      <ng-container matColumnDef="implementor">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Implementor</th>
+        <td mat-cell *matCellDef="let element"> {{element.implementor}}</td>
+      </ng-container>
+
       <ng-container matColumnDef="reportStatus">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>Report Status</th>
-        <td mat-cell *matCellDef="let element"> {{element.reportStatus}}</td>
+        <td mat-cell *matCellDef="let element" [ngClass]="element.cls"> {{element.reportStatus}}</td>
       </ng-container>
 
       <ng-container matColumnDef="action">
         <th mat-header-cell *matHeaderCellDef mat-sort-header>&nbsp;</th>
         <td mat-cell *matCellDef="let element">
-          <button type="button" mat-icon-button [matMenuTriggerFor]="menu">
+          <button type="button" mat-icon-button [matMenuTriggerFor]="menu" *ngIf="element.reportStatus !== 'Rejected'">
             <mat-icon>more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
             <a *ngIf="element.download !== null" mat-menu-item mat href="{{element.download}}">Download Report</a>
-            <a mat-menu-item (click)="approveReport(element)"
+            <a mat-menu-item (click)="changeReport(element.trackedEntityInstance,{reportStatus:'Approved'})"
                *ngIf="element.reportStatus !== 'Approved' && baylorStore.canApproveReport">Approve
               Report</a>
+            <a mat-menu-item (click)="changeReport(element.trackedEntityInstance,{reportStatus:'Rejected'})"
+               *ngIf="element.reportStatus !== 'Rejected' && element.reportStatus !== 'Approved' && baylorStore.canApproveReport">Reject
+              Report</a>
+
+            <!--<a mat-menu-item (click)="changeReport(element.trackedEntityInstance,'Rejected')"
+               *ngIf="element.reportStatus !== 'Approved' && baylorStore.canApproveReport">Delete Report</a>-->
             <a *ngIf="element.reportStatus !== 'Approved' && baylorStore.canEditReport" mat-menu-item
                (click)="editReport(element)">Update Report</a>
             <a mat-menu-item (click)="viewIssues(element)">
-              <span [matBadge]="issues[element.event]" matBadgeOverlap="false">{{element.issues}}View Issues</span>
+              <span [matBadge]="element.issues" matBadgeOverlap="false">View Issues</span>
             </a>
+
+            <a mat-menu-item (click)="openCommentBox(element.trackedEntityInstance,element.comment)">
+              Comments
+            </a>
+
           </mat-menu>
         </td>
       </ng-container>
@@ -57,7 +73,8 @@
       <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
 
-    <mat-paginator #paginator [pageSize]="10" [pageSizeOptions]="[5, 10, 20,50]" [showFirstLastButtons]="true">
+    <mat-paginator #paginator [pageSize]="baylorStore.pageInfo.pageSize" [pageSizeOptions]="[5, 10, 20,50]"
+                   [showFirstLastButtons]="true" [length]="baylorStore.total" (page)="baylorStore.pager($event)">
     </mat-paginator>
   </div>
 </div>
